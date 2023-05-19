@@ -7,12 +7,12 @@
 
 from chardet import detect
 
-with open('test.txt', encoding='utf-8') as file:
+with open('text.txt', encoding='utf-8') as file:
     for line in file.read():
         print(line)
 #file.close()
 
 
-file = open('test.txt', 'rb')
+file = open('text.txt', 'rb')
 for line in file:
     print(line.decode(encoding='utf-8'))
