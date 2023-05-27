@@ -3,7 +3,7 @@ import json
 import socket
 import time
 from common.variables import act, name_accaunte, present, MAX_CONNECTIONS, \
-    RESPONSE, PRESENCE, TIME, users, eror, port_defail
+    resp, presen, TIME, users, eror, port_defail
 from common.utils import get_message, send_message
 
 
@@ -19,8 +19,8 @@ def create_presence(account_name='Guest'):
 
 
 def process_ans(message):
-    if RESPONSE in message:
-        if message[RESPONSE] == 200:
+    if resp in message:
+        if message[resp] == 200:
             return '200 : OK'
         return f'400 : {message[eror]}'
     raise ValueError
@@ -33,7 +33,7 @@ def main():
         if server_port < 1024 or server_port > 65535:
             raise ValueError
     except IndexError:
-        server_address = DEFAULT_IP_ADDRESS
+        server_address = port_defail
         server_port = port_defail
     except ValueError:
         print('В качестве порта может быть указано только число в диапазоне от 1024 до 65535.')
