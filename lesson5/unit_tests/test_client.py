@@ -1,11 +1,10 @@
-"""Unit-тесты клиента"""
-
 import sys
 import os
 import unittest
 sys.path.append(os.path.join(os.getcwd(), '..'))
 from common.variables import response, error, users, name_account, TIME, action, presence
 from client import create_presence, process_ans
+
 
 class TestClass(unittest.TestCase):
     def test_def_presense(self):

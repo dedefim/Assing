@@ -4,6 +4,13 @@ class IncorrectDataRecivedError(Exception):
         return 'Принято некорректное сообщение от удалённого компьютера.'
 
 
+class ServerError(Exception):
+    def __init__(self, text):
+        self.text = text
+    def __str__(self):
+        return self.text
+
+
 class NonDictInputError(Exception):
     def __str__(self):
         return 'Аргумент функции должен быть словарём.'

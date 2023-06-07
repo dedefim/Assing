@@ -19,8 +19,11 @@ action = 'action'
 TIME = 'time'
 users = 'user'
 name_account = 'account_name'
+sender = 'sender'
 
 # Прочие ключи, используемые в протоколе
 presence = 'presence'
 response = 'response'
 error = 'error'
+message = 'message'
+text_mes = 'mess_text'
