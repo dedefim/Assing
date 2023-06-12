@@ -27,7 +27,6 @@ class TestServer(unittest.TestCase):
             {action: presence, users: {name_account: 'Guest'}}), self.err_dict)
 
     def test_no_user(self):
-        """Ошибка - нет пользователя"""
         self.assertEqual(process_client_message(
             {action: presence, TIME: '1.1'}), self.err_dict)
 

@@ -19,11 +19,21 @@ action = 'action'
 TIME = 'time'
 users = 'user'
 name_account = 'account_name'
-sender = 'sender'
-
+sender = 'from'
+destional = 'to'
 # Прочие ключи, используемые в протоколе
 presence = 'presence'
 response = 'response'
 error = 'error'
 message = 'message'
 text_mes = 'mess_text'
+exit = 'exit'
+
+# Словари - ответы:
+# 200
+response_200 = {response: 200}
+# 400
+RESPONSE_400 = {
+    response: 400,
+    error: None
+}
