@@ -1,0 +1,109 @@
+{
+    "orders": [
+        {
+            "item": "\u043f\u0440\u0438\u043d\u0442\u0435\u0440",
+            "quantity": "10",
+            "price": "6700",
+            "buyer": "Ivanov I.I.",
+            "date": "24.09.2017"
+        },
+        {
+            "item": "\u0441\u043a\u0430\u043d\u0435\u0440",
+            "quantity": "20",
+            "price": "10000",
+            "buyer": "Petrov P.P.",
+            "date": "11.01.2018"
+        },
+        {
+            "item": "\u043a\u043e\u043c\u043f\u044c\u044e\u0442\u0435\u0440",
+            "quantity": "5",
+            "price": "40000",
+            "buyer": "Sidorov S.S.",
+            "date": "2.05.2019"
+        },
+        {
+            "item": "printer",
+            "quantity": "10",
+            "price": "6700",
+            "buyer": "Ivanov I.I.",
+            "date": "24.09.2017"
+        },
+        {
+            "item": "scaner",
+            "quantity": "20",
+            "price": "10000",
+            "buyer": "Petrov P.P.",
+            "date": "11.01.2018"
+        },
+        {
+            "item": "computer",
+            "quantity": "5",
+            "price": "40000",
+            "buyer": "Sidorov S.S.",
+            "date": "2.05.2019"
+        },
+        {
+            "item": "\u043f\u0440\u0438\u043d\u0442\u0435\u0440",
+            "quantity": "10",
+            "price": "6700",
+            "buyer": "Ivanov I.I.",
+            "date": "24.09.2017"
+        },
+        {
+            "item": "\u0441\u043a\u0430\u043d\u0435\u0440",
+            "quantity": "20",
+            "price": "10000",
+            "buyer": "Petrov P.P.",
+            "date": "11.01.2018"
+        },
+        {
+            "item": "\u043a\u043e\u043c\u043f\u044c\u044e\u0442\u0435\u0440",
+            "quantity": "5",
+            "price": "40000",
+            "buyer": "Sidorov S.S.",
+            "date": "2.05.2019"
+        },
+        {
+            "item": "printer",
+            "quantity": "10",
+            "price": "6700",
+            "buyer": "Ivanov I.I.",
+            "date": "24.09.2017"
+        },
+        {
+            "item": "scaner",
+            "quantity": "20",
+            "price": "10000",
+            "buyer": "Petrov P.P.",
+            "date": "11.01.2018"
+        },
+        {
+            "item": "computer",
+            "quantity": "5",
+            "price": "40000",
+            "buyer": "Sidorov S.S.",
+            "date": "2.05.2019"
+        },
+        {
+            "item": "printer",
+            "quantity": "10",
+            "price": "6700",
+            "buyer": "Ivanov I.I.",
+            "date": "24.09.2017"
+        },
+        {
+            "item": "scaner",
+            "quantity": "20",
+            "price": "10000",
+            "buyer": "Petrov P.P.",
+            "date": "11.01.2018"
+        },
+        {
+            "item": "computer",
+            "quantity": "5",
+            "price": "40000",
+            "buyer": "Sidorov S.S.",
+            "date": "2.05.2019"
+        }
+    ]
+}
