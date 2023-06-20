@@ -1,4 +1,3 @@
-"""Программа-лаунчер"""
 
 import subprocess
 

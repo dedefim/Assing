@@ -7,6 +7,10 @@ import json
 sys.path.append(os.path.join(os.getcwd(), '..'))
 from common.variables import response, error, users, name_account, TIME, action, presence, ENCODING
 from common.utils import get_message, send_message
+from common.utils import *
+from common.variables import *
+from errors import NonDictInputError
+
 
 class TestSocket:
     def __init__(self, test_dict):

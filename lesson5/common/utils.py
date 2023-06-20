@@ -1,3 +1,4 @@
+from common.variables import *
 import json
 import sys
 from common.variables import MAX_PACKAGE_LENGTH, ENCODING
@@ -14,8 +15,10 @@ def get_message(client):
         response = json.loads(json_response)
         if isinstance(response, dict):
             return response
-        raise ValueError
-    raise ValueError
+        else:
+            raise IncorrectDataRecivedError
+    else:
+        raise IncorrectDataRecivedError
 
 
 @log

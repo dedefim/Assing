@@ -1,5 +1,3 @@
-"""Кофнфиг серверного логгера"""
-
 import sys
 import os
 import logging

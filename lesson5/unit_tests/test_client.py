@@ -4,11 +4,13 @@ import unittest
 sys.path.append(os.path.join(os.getcwd(), '..'))
 from common.variables import response, error, users, name_account, TIME, action, presence
 from client import create_presence, process_ans
+from common.variables import *
+from errors import ReqFieldMissingError, ServerError
 
 
 class TestClass(unittest.TestCase):
     def test_def_presense(self):
-        test = create_presence()
+        test = create_presence('Guest')
         test[TIME] = 1.1
         self.assertEqual(test, {action: presence, TIME: 1.1, users: {name_account: 'Guest'}})
 
