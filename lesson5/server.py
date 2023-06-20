@@ -17,6 +17,9 @@ from descrptrs import Port
 from metaclasses import ServerMaker
 from common.variables import *
 from common.utils import *
+import threading
+from server_database import ServerStorage
+
 
 
 logger = logging.getLogger('server')
@@ -32,15 +35,17 @@ def arg_parser():
     listen_port = namespace.p
     return listen_address, listen_port
 
-class Server(metaclass=ServerMaker):
+class Server(threading.Thread, metaclass=ServerMaker):
     port = Port()
 
-    def __init__(self, listen_address, listen_port):
+    def __init__(self, listen_address, listen_port, database):
         self.addr = listen_address
         self.port = listen_port
+        self.database = database
         self.clients = []
         self.messages = []
         self.names = dict()
+        super().__init__()
 
     def init_socket(self):
         logger.info(
@@ -51,85 +56,120 @@ class Server(metaclass=ServerMaker):
         self.sock = transport
         self.sock.listen()
 
-    def main_loop(self):
-        self.init_socket()
-        while True:
-            try:
-                client, client_address = self.sock.accept()
-            except OSError:
-                pass
-            else:
-                logger.info(f'Установлено соедение с ПК {client_address}')
-                self.clients.append(client)
+        def run(self):
+            # Инициализация Сокета
+            self.init_socket()
 
-            recv_data_lst = []
-            send_data_lst = []
-            err_lst = []
-            try:
-                if self.clients:
-                    recv_data_lst, send_data_lst, err_lst = select.select(self.clients, self.clients, [], 0)
-            except OSError:
-                pass
-            if recv_data_lst:
-                for client_with_message in recv_data_lst:
-                    try:
-                        self.process_client_message(get_message(client_with_message), client_with_message)
-                    except:
-                        logger.info(f'Клиент {client_with_message.getpeername()} отключился от сервера.')
-                        self.clients.remove(client_with_message)
-            for message in self.messages:
+            # Основной цикл программы сервера
+            while True:
+                # Ждём подключения, если таймаут вышел, ловим исключение.
                 try:
-                    self.process_message(message, send_data_lst)
-                except:
-                    logger.info(f'Связь с клиентом с именем {message[destional]} была потеряна')
-                    self.clients.remove(self.names[message[destional]])
-                    del self.names[message[destional]]
-            self.messages.clear()
+                    client, client_address = self.sock.accept()
+                except OSError:
+                    pass
+                else:
+                    logger.info(f'Установлено соедение с ПК {client_address}')
+                    self.clients.append(client)
 
-    def process_message(self, message, listen_socks):
-        if message[destional] in self.names and self.names[message[destional]] in listen_socks:
-            send_message(self.names[message[destional]], message)
-            logger.info(f'Отправлено сообщение пользователю {message[destional]} от пользователя {message[sender]}.')
-        elif message[destional] in self.names and self.names[message[destional]] not in listen_socks:
-            raise ConnectionError
-        else:
-            logger.error(
-                f'Пользователь {message[destional]} не зарегистрирован на сервере, отправка сообщения невозможна.')
-
-    def process_client_message(self, message, client):
-        logger.debug(f'Разбор сообщения от клиента : {message}')
-        if action in message and message[action] == presence and TIME in message and users in message:
-            if message[users][name_account] not in self.names.keys():
-                self.names[message[users][name_account]] = client
-                send_message(client, response_200)
+                recv_data_lst = []
+                send_data_lst = []
+                err_lst = []
+                try:
+                    if self.clients:
+                        recv_data_lst, send_data_lst, err_lst = select.select(self.clients, self.clients, [], 0)
+                except OSError:
+                    pass
+                if recv_data_lst:
+                    for client_with_message in recv_data_lst:
+                        try:
+                            self.process_client_message(get_message(client_with_message), client_with_message)
+                        except:
+                            logger.info(f'Клиент {client_with_message.getpeername()} отключился от сервера.')
+                            self.clients.remove(client_with_message)
+                for message in self.messages:
+                    try:
+                        self.process_message(message, send_data_lst)
+                    except:
+                        logger.info(f'Связь с клиентом с именем {message[destional]} была потеряна')
+                        self.clients.remove(self.names[message[destional]])
+                        del self.names[message[destional]]
+                self.messages.clear()
+        def process_message(self, message, listen_socks):
+            if message[destional] in self.names and self.names[message[destional]] in listen_socks:
+                send_message(self.names[message[destional]], message)
+                logger.info(
+                    f'Отправлено сообщение пользователю {message[destional]} от пользователя {message[sender]}.')
+            elif message[destional] in self.names and self.names[message[destional]] not in listen_socks:
+                raise ConnectionError
+            else:
+                logger.error(
+                    f'Пользователь {message[destional]} не зарегистрирован на сервере, отправка сообщения невозможна.')
+        def process_client_message(self, message, client):
+            logger.debug(f'Разбор сообщения от клиента : {message}')
+            if action in message and message[action] == presence and TIME in message and users in message:
+                if message[users][name_account] not in self.names.keys():
+                    self.names[message[users][name_account]] = client
+                    client_ip, client_port = client.getpeername()
+                    self.database.user_login(message[users][name_account], client_ip, client_port)
+                    send_message(client, response_200)
+                else:
+                    response = RESPONSE_400
+                    response[error] = 'Имя пользователя уже занято.'
+                    send_message(client, response)
+                    self.clients.remove(client)
+                    client.close()
+                return
+            elif action in message and message[action] == message and destional in message and TIME in message \
+                    and sender in message and text_mes in message:
+                self.messages.append(message)
+                return
+            elif action in message and message[action] == exit and name_account in message:
+                self.database.user_logout(message[name_account])
+                self.clients.remove(self.names[message[name_account]])
+                self.names[message[name_account]].close()
+                del self.names[message[name_account]]
+                return
             else:
                 response = RESPONSE_400
-                response[error] = 'Имя пользователя уже занято.'
+                response[error] = 'Запрос некорректен.'
                 send_message(client, response)
-                self.clients.remove(client)
-                client.close()
-            return
-        elif action in message and message[action] == message and destional in message and TIME in message \
-                and sender in message and text_mes in message:
-            self.messages.append(message)
-            return
-        elif action in message and message[action] == exit and name_account in message:
-            self.clients.remove(self.names[name_account])
-            self.names[name_account].close()
-            del self.names[name_account]
-            return
-        else:
-            response = RESPONSE_400
-            response[error] = 'Запрос некорректен.'
-            send_message(client, response)
-            return
+                return
 
+def print_help():
+    print('Поддерживаемые комманды:')
+    print('users - список известных пользователей')
+    print('connected - список подключенных пользователей')
+    print('loghist - история входов пользователя')
+    print('exit - завершение работы сервера.')
+    print('help - вывод справки по поддерживаемым командам')
 
 def main():
     listen_address, listen_port = arg_parser()
-    server = Server(listen_address, listen_port)
-    server.main_loop()
-
+    database = ServerStorage()
+    server = Server(listen_address, listen_port, database)
+    server.daemon = True
+    server.start()
+    print_help()
+    while True:
+        command = input('Введите комманду: ')
+        if command == 'help':
+            print_help()
+        elif command == 'exit':
+            break
+        elif command == 'users':
+            for user in sorted(database.users_list()):
+                print(f'Пользователь {user[0]}, последний вход: {user[1]}')
+        elif command == 'connected':
+            for user in sorted(database.active_users_list()):
+                print(
+                    f'Пользователь {user[0]}, подключен: {user[1]}:{user[2]}, время установки соединения: {user[3]}')
+        elif command == 'loghist':
+            name = input(
+                'Введите имя пользователя для просмотра истории. Для вывода всей истории, просто нажмите Enter: ')
+            for user in sorted(database.login_history(name)):
+                print(f'Пользователь: {user[0]} время входа: {user[1]}. Вход с: {user[2]}:{user[3]}')
+        else:
+            print('Команда не распознана.')
 
 if __name__ == '__main__':
     main()
