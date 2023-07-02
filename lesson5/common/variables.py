@@ -14,6 +14,7 @@ ENCODING = 'utf-8'
 # Текущий уровень логирования
 LOGGING_LEVEL = logging.DEBUG
 database_server = 'sqlite:///server_base.db3'
+conf_serv = 'server.ini'
 
 # Прококол JIM основные ключи:
 action = 'action'
@@ -29,10 +30,18 @@ error = 'error'
 message = 'message'
 text_mes = 'mess_text'
 exit = 'exit'
+contacts = 'get_contacts'
+info = 'data_list'
+contact_remove = 'remove'
+contact_add = 'add'
+request_user = 'get_users'
 
 # Словари - ответы:
 # 200
 response_200 = {response: 200}
+respons_202 = {response: 202,
+                info:None
+                }
 # 400
 RESPONSE_400 = {
     response: 400,

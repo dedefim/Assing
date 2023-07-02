@@ -1,4 +1,5 @@
 import sys
+sys.path.append('../')
 import os
 import unittest
 sys.path.append(os.path.join(os.getcwd(), '..'))
