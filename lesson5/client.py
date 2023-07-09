@@ -7,11 +7,17 @@ import logging
 import threading
 import logs.config_client_log
 from common.variables import *
+from Crypto.PublicKey import RSA
+from PyQt5.QtWidgets import QApplication, QMessageBox
 from common.utils import *
+from common.errors import ServerError
 from errors import IncorrectDataRecivedError, ReqFieldMissingError, ServerError
 from decos import log
 from metaclasses import ClientMaker
 from client_database import ClientDatabase
+from client.transport import ClientTransport
+from client.main_window import ClientMainWindow
+from client.start_dialog import UserNameDialog
 
 logger = logging.getLogger('client')
 sock_lock = threading.Lock()
@@ -199,30 +205,32 @@ def process_response_ans(message):
             raise ServerError(f'400 : {message[error]}')
     raise ReqFieldMissingError(response)
 
+
 @log
 def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('addr', default=defal_ip, nargs='?')
     parser.add_argument('port', default=defal_ip, type=int, nargs='?')
     parser.add_argument('-n', '--name', default=None, nargs='?')
+    parser.add_argument('-p', '--password', default='', nargs='?')
     namespace = parser.parse_args(sys.argv[1:])
     server_address = namespace.addr
     server_port = namespace.port
     client_name = namespace.name
+    client_passwd = namespace.password
 
-    # проверим подходящий номер порта
     if not 1023 < server_port < 65536:
         logger.critical(
             f'Попытка запуска клиента с неподходящим номером порта: {server_port}. Допустимы адреса с 1024 до 65535. Клиент завершается.')
         exit(1)
 
-    return server_address, server_port, client_name
+    return server_address, server_port, client_name, client_passwd
 
 
 def contacts_list_request(sock, name):
     logger.debug(f'Запрос контакт листа для пользователся {name}')
     req = {
-        action: GET_CONTACTS,
+        action: contacts,
         TIME: time.time(),
         users: name
     }
@@ -231,7 +239,7 @@ def contacts_list_request(sock, name):
     ans = get_message(sock)
     logger.debug(f'Получен ответ {ans}')
     if response in ans and ans[response] == 202:
-        return ans[LIST_INFO]
+        return ans[info]
     else:
         raise ServerError
 
@@ -239,7 +247,7 @@ def contacts_list_request(sock, name):
 def add_contact(sock, username, contact):
     logger.debug(f'Создание контакта {contact}')
     req = {
-        action: ADD_CONTACT,
+        action: contact_add,
         TIME: time.time(),
         users: username,
         name_account: contact
@@ -256,21 +264,21 @@ def add_contact(sock, username, contact):
 def user_list_request(sock, username):
     logger.debug(f'Запрос списка известных пользователей {username}')
     req = {
-        action: USERS_REQUEST,
+        action: request_user,
         TIME: time.time(),
         name_account: username
     }
     send_message(sock, req)
     ans = get_message(sock)
     if response in ans and ans[response] == 202:
-        return ans[LIST_INFO]
+        return ans[info]
     else:
         raise ServerError
 
 def remove_contact(sock, username, contact):
     logger.debug(f'Создание контакта {contact}')
     req = {
-        action: REMOVE_CONTACT,
+        action: contact_remove,
         TIME: time.time(),
         users: username,
         name_account: contact

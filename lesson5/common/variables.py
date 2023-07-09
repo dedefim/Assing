@@ -23,7 +23,7 @@ users = 'user'
 name_account = 'account_name'
 sender = 'from'
 destional = 'to'
-public_keys= 'pubkey'
+public_keys = 'pubkey'
 # Прочие ключи, используемые в протоколе
 presence = 'presence'
 response = 'response'
